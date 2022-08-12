@@ -1,0 +1,86 @@
+<html>
+<head>
+    <link rel="stylesheet" href="myCSS.css">
+    <script src="jquery-3.6.0.js"></script>
+    <script src="Inputmask-5.x/dist/jquery.inputmask.js"></script>
+</head>
+<body>
+    <div class="container">
+        <form id="Form" method="POST">
+          <ul class="flex-outer">
+            <li>
+              <label for="first-name">Имя</label>
+              <input type="text" name="name" id="first-name" placeholder="Введите своё имя">
+            </li>
+            <li>
+                <label for="phone">Телефон</label>
+                <input type="tel" name="phone" id="phone" data-role="input, input-mask" data-mask="+380 (__) ___-____">
+              </li>
+            <li>
+              <label for="email">Email</label>
+              <input type="email" name="email" id="email" placeholder="Введите свой Email">
+            </li>
+           
+            <li>
+              <button type="submit" id="button">Submit</button>
+            </li>
+          </ul>
+        </form>
+      </div>
+
+      <div class="modal">
+        <div class="modal-content">
+          <p id="text">this is the text inside the modal</p>
+        </div>
+      </div>
+
+    <script>
+      text = document.getElementById("text");
+      let modalBtn = document.getElementById("button")
+      let modal = document.querySelector(".modal")
+      modalBtn.onclick = function(){
+        modal.style.display = "block"
+      }
+        var selector = document.getElementById("phone");   
+
+        var im = new Inputmask("+7 (999) 999-99-99");
+        im.mask(selector);
+
+        $(document).ready(function() {
+    $('#Form').submit(function(e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: 'SendMail.php',
+            data: $(this).serialize(),
+            success: function(response)
+            {
+              var jsonData = JSON.parse(response);
+              if (jsonData.success == "1")
+                {
+                  text.innerText = "Письмо отправлено!"
+                  setTimeout(() => {
+                  modal.style.display = "none"
+                  }, "3000")
+                }
+                else if (jsonData.success == "0")
+                {
+                  text.innerText = "Вы не ввели все данные"
+                  setTimeout(() => {
+                  modal.style.display = "none"
+                  }, "3000")
+                }
+                else if (jsonData.success == "2")
+                {
+                  text.innerText = "Упс, проблемы с отправкой письма!"
+                  setTimeout(() => {
+                  modal.style.display = "none"
+                  }, "3000")
+                }
+                
+            }
+       });
+     });
+});
+    </script>
+</body>
